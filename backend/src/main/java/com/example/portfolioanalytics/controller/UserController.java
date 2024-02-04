@@ -13,8 +13,9 @@ import java.util.List;
 @RestController
 public class UserController {
 
-    @PostMapping("/api/register")
+    @PostMapping("/register")
     public String registerUser(@RequestBody User user) {
+        System.out.println("hello");
         UserRecord.CreateRequest request = new UserRecord.CreateRequest()
                 .setEmail(user.getEmail())
                 .setPassword(user.getPassword())
