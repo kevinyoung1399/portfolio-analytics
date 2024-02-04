@@ -1,12 +1,15 @@
 package com.example.portfolioanalytics.controller;
 
 import com.example.portfolioanalytics.model.portfolio.Portfolio;
+import com.example.portfolioanalytics.service.AnalyticsService;
 import com.example.portfolioanalytics.service.PortfolioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -28,12 +31,13 @@ public class PortfolioController {
         }
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Portfolio> getPortfolioById(@PathVariable String id, Authentication authentication) {
+    @GetMapping("/{portfolioId}")
+    public ResponseEntity<Portfolio> getPortfolioById(@PathVariable String portfolioId,
+                                                      Authentication authentication) {
         String userId = authentication.getName();
-        System.out.println("Fetching portfolio with ID: " + id);
+        System.out.println("Fetching portfolio with ID: " + portfolioId);
         try {
-            Portfolio portfolio = portfolioService.getPortfolioById(id, userId);
+            Portfolio portfolio = portfolioService.getPortfolioById(portfolioId, userId);
             if (portfolio != null) {
                 return ResponseEntity.ok(portfolio);
             } else {
@@ -55,14 +59,14 @@ public class PortfolioController {
         }
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{portfolioId}")
     public ResponseEntity<String> updatePortfolio(
-            @PathVariable String id,
+            @PathVariable String portfolioId,
             @RequestBody Portfolio portfolio,
             Authentication authentication) {
         String userId = authentication.getName();
         try {
-            String updatedPortfolioId = portfolioService.updatePortfolio(id, portfolio, userId);
+            String updatedPortfolioId = portfolioService.updatePortfolio(portfolioId, portfolio, userId);
             if (updatedPortfolioId != null) {
                 return ResponseEntity.ok("Portfolio updated successfully");
             } else {
@@ -73,11 +77,11 @@ public class PortfolioController {
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deletePortfolio(@PathVariable String id, Authentication authentication) {
+    @DeleteMapping("/{portfolioId}")
+    public ResponseEntity<String> deletePortfolio(@PathVariable String portfolioId, Authentication authentication) {
         String userId = authentication.getName();
         try {
-            boolean deleted = portfolioService.deletePortfolio(id, userId);
+            boolean deleted = portfolioService.deletePortfolio(portfolioId, userId);
             if (deleted) {
                 return ResponseEntity.ok("Portfolio deleted successfully");
             } else {
@@ -87,4 +91,5 @@ public class PortfolioController {
             return ResponseEntity.badRequest().body("Error deleting portfolio: " + e.getMessage());
         }
     }
+
 }
