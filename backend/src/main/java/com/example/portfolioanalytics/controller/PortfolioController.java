@@ -31,6 +31,7 @@ public class PortfolioController {
     @GetMapping("/{id}")
     public ResponseEntity<Portfolio> getPortfolioById(@PathVariable String id, Authentication authentication) {
         String userId = authentication.getName();
+        System.out.println("Fetching portfolio with ID: " + id);
         try {
             Portfolio portfolio = portfolioService.getPortfolioById(id, userId);
             if (portfolio != null) {

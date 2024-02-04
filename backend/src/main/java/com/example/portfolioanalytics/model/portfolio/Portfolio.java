@@ -15,6 +15,15 @@ public class Portfolio {
     @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL)
     private List<Investment> investments = new ArrayList<>();
 
+    public Portfolio(String id, String userId, String name, List<Investment> investments) {
+        this.id = id;
+        this.userId = userId;
+        this.name = name;
+        this.investments = investments;
+    }
+
+    public Portfolio() {}
+
     public String getId() {
         return id;
     }

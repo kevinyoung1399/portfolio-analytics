@@ -17,4 +17,6 @@ public class ETF extends Investment {
             String symbol, double quantity, Date purchaseDate, double purchasePrice) {
         super(id, type, symbol, quantity, purchaseDate, purchasePrice);
     }
+
+    public ETF() {}
 }

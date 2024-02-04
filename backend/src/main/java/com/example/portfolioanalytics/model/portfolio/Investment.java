@@ -29,6 +29,8 @@ public class Investment {
         this.purchasePrice = purchasePrice;
     }
 
+    public Investment() {}
+
     public String getId() {
         return id;
     }
