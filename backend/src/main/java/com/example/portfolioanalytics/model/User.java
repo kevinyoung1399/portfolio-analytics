@@ -6,6 +6,8 @@ import javax.validation.constraints.Size;
 
 public class User {
 
+    private String uid; //UID from firebase
+
     @NotBlank(message = "Name is required")
     private String name;
 
@@ -21,6 +23,21 @@ public class User {
         this.name = name;
         this.email = email;
         this.password = password;
+    }
+
+    public User(String uid, String name, String email, String password) {
+        this.uid = uid;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     public String getName() {

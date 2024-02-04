@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 public class UserController {
 
-    @PostMapping("/register")
+    @PostMapping("/api/register")
     public String registerUser(@RequestBody User user) {
         UserRecord.CreateRequest request = new UserRecord.CreateRequest()
                 .setEmail(user.getEmail())
