@@ -17,4 +17,6 @@ public class Stock extends Investment {
             String symbol, double quantity, Date purchaseDate, double purchasePrice) {
         super(id, type, symbol, quantity, purchaseDate, purchasePrice);
     }
+
+    public Stock() {}
 }

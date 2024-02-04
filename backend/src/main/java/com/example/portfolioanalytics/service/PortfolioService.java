@@ -1,6 +1,6 @@
 package com.example.portfolioanalytics.service;
 
-import com.example.portfolioanalytics.model.portfolio.Bond;
+//import com.example.portfolioanalytics.model.portfolio.Bond;
 import com.example.portfolioanalytics.model.portfolio.Investment;
 import com.example.portfolioanalytics.model.portfolio.Portfolio;
 import com.example.portfolioanalytics.model.portfolio.Stock;
@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -33,17 +34,21 @@ public class PortfolioService {
             if (!"Bond".equals(type) && !"ETF".equals(type) && !"Stock".equals(type)) {
                 throw new IllegalArgumentException("Invalid investment type: " + type);
             }
+            String uniqueID = UUID.randomUUID().toString();
+            investment.setId(uniqueID);
         }
         ApiFuture<WriteResult> collectionsApiFuture = documentReference.set(portfolio);
         return collectionsApiFuture.get().getUpdateTime().toString();
     }
 
+    // TODO: handle the polymorphism for Firestore when introducing Bond type investment
     public Portfolio getPortfolioById(
             String portfolioId, String userId) throws InterruptedException, ExecutionException {
         DocumentReference documentReference = getFirestore().collection(PORTFOLIOS_COLLECTION).document(portfolioId);
         ApiFuture<DocumentSnapshot> future = documentReference.get();
         DocumentSnapshot document = future.get();
         if (document.exists() && userId.equals(document.getString("userId"))) {
+            System.out.println(document.toObject(Portfolio.class));
             return document.toObject(Portfolio.class);
         } else {
             throw new InterruptedException("Portfolio is either not found or not authorized");
