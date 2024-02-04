@@ -1,4 +1,4 @@
-package com.example.portfolioanalytics.model;
+package com.example.portfolioanalytics.model.portfolio;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -6,23 +6,27 @@ import jakarta.persistence.Id;
 
 import java.util.Date;
 
-public class Stock {
+public class Investment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private String id;
+    private String type;
     private String symbol;
     private double quantity;
+    private Date purchaseDate;
     private double purchasePrice;
     private double currentPrice;
-    private Date purchaseDate;
 
-    public Stock(String id, String symbol, double quantity, double purchasePrice, double currentPrice, Date purchaseDate) {
+    public Investment(
+            String id,
+            String symbol,
+            String type, double quantity, Date purchaseDate, double purchasePrice) {
         this.id = id;
+        this.type = type;
         this.symbol = symbol;
         this.quantity = quantity;
-        this.purchasePrice = purchasePrice;
-        this.currentPrice = currentPrice;
         this.purchaseDate = purchaseDate;
+        this.purchasePrice = purchasePrice;
     }
 
     public String getId() {
@@ -31,6 +35,14 @@ public class Stock {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getSymbol() {
@@ -49,6 +61,14 @@ public class Stock {
         this.quantity = quantity;
     }
 
+    public Date getPurchaseDate() {
+        return purchaseDate;
+    }
+
+    public void setPurchaseDate(Date purchaseDate) {
+        this.purchaseDate = purchaseDate;
+    }
+
     public double getPurchasePrice() {
         return purchasePrice;
     }
@@ -63,13 +83,5 @@ public class Stock {
 
     public void setCurrentPrice(double currentPrice) {
         this.currentPrice = currentPrice;
-    }
-
-    public Date getPurchaseDate() {
-        return purchaseDate;
-    }
-
-    public void setPurchaseDate(Date purchaseDate) {
-        this.purchaseDate = purchaseDate;
     }
 }
