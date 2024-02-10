@@ -14,6 +14,9 @@ public class Portfolio {
     private String name;
     @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL)
     private List<Investment> investments = new ArrayList<>();
+    private double purchaseTotal;
+    private double currentTotal;
+    private double totalDifference;
 
     public Portfolio(String id, String userId, String name, List<Investment> investments) {
         this.id = id;
@@ -56,4 +59,27 @@ public class Portfolio {
         this.investments = investments;
     }
 
+    public double getPurchaseTotal() {
+        return purchaseTotal;
+    }
+
+    public void setPurchaseTotal(double purchaseTotal) {
+        this.purchaseTotal = purchaseTotal;
+    }
+
+    public double getCurrentTotal() {
+        return currentTotal;
+    }
+
+    public void setCurrentTotal(double currentTotal) {
+        this.currentTotal = currentTotal;
+    }
+
+    public double getTotalDifference() {
+        return totalDifference;
+    }
+
+    public void setTotalDifference(double totalDifference) {
+        this.totalDifference = totalDifference;
+    }
 }

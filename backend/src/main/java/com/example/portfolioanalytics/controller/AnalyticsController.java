@@ -23,7 +23,7 @@ public class AnalyticsController {
     @Autowired
     private AnalyticsService analyticsService;
 
-    @PostMapping("/{portfolioId}/sma")
+    @PostMapping("/sma/{portfolioId}")
     public ResponseEntity<List<String>> calculateSimpleMovingAverage(@PathVariable String portfolioId,
                                                                      @RequestBody Map<String, Object> requestBody,
                                                                      Authentication authentication) {
@@ -31,12 +31,10 @@ public class AnalyticsController {
         int timePeriod = (int) requestBody.get("timePeriod");
         try {
             Portfolio portfolio = portfolioService.getPortfolioById(portfolioId, userId);
-            System.out.println("got the portfolio" + portfolio.getName());
             List<String> result = analyticsService.calculateSimpleMovingAverage(portfolio, timePeriod);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
-
 }

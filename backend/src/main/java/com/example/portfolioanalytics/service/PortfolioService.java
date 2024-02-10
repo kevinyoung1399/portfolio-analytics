@@ -29,14 +29,17 @@ public class PortfolioService {
         // Ensure the userId is set for the new portfolio
         portfolio.setUserId(userId);
         portfolio.setId(documentReference.getId()); // Set the Firestore-generated ID to the portfolio object
+        double totalPurchasePrice = 0.0;
         for (Investment investment : portfolio.getInvestments()) {
             String type = investment.getType();
             if (!"Bond".equals(type) && !"ETF".equals(type) && !"Stock".equals(type)) {
                 throw new IllegalArgumentException("Invalid investment type: " + type);
             }
+            totalPurchasePrice += investment.getPurchasePrice();
             String uniqueID = UUID.randomUUID().toString();
             investment.setId(uniqueID);
         }
+        portfolio.setPurchaseTotal(totalPurchasePrice);
         ApiFuture<WriteResult> collectionsApiFuture = documentReference.set(portfolio);
         return collectionsApiFuture.get().getUpdateTime().toString();
     }

@@ -16,6 +16,7 @@ public class Investment {
     private Date purchaseDate;
     private double purchasePrice;
     private double currentPrice;
+    private double priceDifference;
 
     public Investment(
             String id,
@@ -85,5 +86,13 @@ public class Investment {
 
     public void setCurrentPrice(double currentPrice) {
         this.currentPrice = currentPrice;
+    }
+
+    public double getPriceDifference() {
+        return priceDifference;
+    }
+
+    public void setPriceDifference(double priceDifference) {
+        this.priceDifference = priceDifference;
     }
 }

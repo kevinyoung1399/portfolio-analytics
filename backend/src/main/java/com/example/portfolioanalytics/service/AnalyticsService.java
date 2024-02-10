@@ -2,6 +2,7 @@ package com.example.portfolioanalytics.service;
 
 import com.example.portfolioanalytics.model.portfolio.Investment;
 import com.example.portfolioanalytics.model.portfolio.Portfolio;
+import com.example.portfolioanalytics.model.portfolio.PortfolioReturn;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,7 @@ public class AnalyticsService {
         String url = "https://www.alphavantage.co/query?function=SMA&symbol={symbol}&interval=daily&time_period={timePeriod}&series_type=close&apikey={apiKey}";
 
         List<String> smaList = new ArrayList<>();
-        for (Investment investment: investmentList) {
+        for (Investment investment : investmentList) {
             String symbol = investment.getSymbol();
             Map<String, String> vars = new HashMap<>();
             vars.put("symbol", symbol);
@@ -39,7 +40,48 @@ public class AnalyticsService {
         }
         return smaList;
     }
+
+    public PortfolioReturn calculateReturn(Portfolio portfolio, String date) throws InterruptedException {
+        double totalCurrentPrice = 0.0;
+
+        for (Investment investment : portfolio.getInvestments()) {
+            Map<String, Map<String, String>> timeSeries = fetchTimeSeries(investment.getSymbol());
+            Map<String, String> dateData = timeSeries.get(date);
+            double currentPrice = Double.parseDouble(dateData.get("4. close"));
+            totalCurrentPrice += currentPrice * investment.getQuantity();
+        }
+        double totalPurchasePrice = portfolio.getPurchaseTotal();
+        double totalReturnsDollars = totalCurrentPrice - totalPurchasePrice;
+        double totalReturnsPercentage = (totalReturnsDollars / totalPurchasePrice) * 100;
+
+        return new PortfolioReturn(totalReturnsDollars, totalReturnsPercentage);
+    }
+
+    public double[] calculateReturnOverTime(Portfolio portfolio, String startDate) throws InterruptedException{
+        Map<String, Double> dailyValues = new TreeMap<>();
+
+        for (Investment investment : portfolio.getInvestments()) {
+            Map<String, Map<String, String>> timeSeries = fetchTimeSeries(investment.getSymbol());
+            timeSeries.forEach((date, dateData) -> {
+                if (date.compareTo(startDate) >= 0) {
+                    double closePrice = Double.parseDouble(dateData.get("4. close"));
+                    dailyValues.merge(date, closePrice * investment.getQuantity(), Double::sum);
+                }
+            });
+        }
+        double[] portfolioValues = dailyValues.values().stream().mapToDouble(Double::doubleValue).toArray();
+        return portfolioValues;
+    }
+
+    public Map<String, Map<String, String>> fetchTimeSeries(String symbol) throws InterruptedException {
+        String url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + symbol + "&apikey=" + apiKey + "&outputsize=full";
+        Map<String, Object> response = restTemplate.getForObject(url, Map.class);
+
+        if (response != null && response.containsKey("Time Series (Daily)")) {
+            Map<String, Map<String, String>> timeSeries = (Map<String, Map<String, String>>) response.get("Time Series (Daily)");
+            return timeSeries;
+        } else {
+            throw new InterruptedException("Portfolio is either not found or not authorized");
+        }
+    }
 }
-
-
-
