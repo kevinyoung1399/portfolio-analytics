@@ -57,7 +57,7 @@ public class AnalyticsService {
         return new PortfolioReturn(totalReturnsDollars, totalReturnsPercentage);
     }
 
-    public double[] calculateReturnOverTime(Portfolio portfolio, String startDate) throws InterruptedException{
+    public double[] calculateDailyReturns(Portfolio portfolio, String startDate) throws InterruptedException{
         Map<String, Double> dailyValues = new TreeMap<>();
 
         for (Investment investment : portfolio.getInvestments()) {
@@ -69,8 +69,20 @@ public class AnalyticsService {
                 }
             });
         }
-        double[] portfolioValues = dailyValues.values().stream().mapToDouble(Double::doubleValue).toArray();
-        return portfolioValues;
+        double[] dailyReturns = dailyValues.values().stream().mapToDouble(Double::doubleValue).toArray();
+        return dailyReturns;
+    }
+
+    public double calculateVolatility (Portfolio portfolio, String startDate) throws InterruptedException{
+        double[] dailyReturns = calculateDailyReturns(portfolio, startDate);
+        List<Double> dailyReturnsList = Arrays.stream(dailyReturns).boxed().toList();
+        if (dailyReturnsList.size() < 2) {
+            throw new IllegalArgumentException("Need at least two days of prices to calculate volatility.");
+        }
+        double averageReturn = dailyReturnsList.stream().mapToDouble(a -> a).average().orElse(0.0);
+        double variance = dailyReturnsList.stream().mapToDouble(r -> Math.pow(r - averageReturn, 2)).sum() / (dailyReturnsList.size() - 1);
+
+        return Math.sqrt(variance);
     }
 
     public Map<String, Map<String, String>> fetchTimeSeries(String symbol) throws InterruptedException {

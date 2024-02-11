@@ -24,7 +24,7 @@ public class DevController {
     @Autowired
     private AnalyticsService analyticsService;
 
-    @PostMapping("/returns")
+    @PostMapping("/returns/date")
     public ResponseEntity<PortfolioReturn> calculateReturn(@RequestBody PortfolioDateRequest request)
             throws InterruptedException {
         Portfolio portfolio = request.getPortfolio();
@@ -34,12 +34,21 @@ public class DevController {
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping("/returns/time")
-    public ResponseEntity<double[]> calculateSimpleMovingAverage(@RequestBody PortfolioDateRequest request) throws InterruptedException {
+    @PostMapping("/returns/daily")
+    public ResponseEntity<double[]> calculateDailyReturns(@RequestBody PortfolioDateRequest request) throws InterruptedException {
         Portfolio portfolio = request.getPortfolio();
         String date = request.getDate();
         System.out.println(portfolio.toString() + date);
-        double[] result = analyticsService.calculateReturnOverTime(portfolio, date);
+        double[] result = analyticsService.calculateDailyReturns(portfolio, date);
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/volatility")
+    public ResponseEntity<Double> calculateVolatility(@RequestBody PortfolioDateRequest request) throws InterruptedException {
+        Portfolio portfolio = request.getPortfolio();
+        String date = request.getDate();
+        System.out.println(portfolio.toString() + date);
+        double result = analyticsService.calculateVolatility(portfolio, date);
         return ResponseEntity.ok(result);
     }
 
