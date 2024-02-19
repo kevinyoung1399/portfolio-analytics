@@ -41,7 +41,7 @@ public class AnalyticsService {
         return smaList;
     }
 
-    public PortfolioReturn calculateReturn(Portfolio portfolio, String date) throws InterruptedException {
+    public PortfolioReturn calculateActualRealizedReturn(Portfolio portfolio, String date) throws InterruptedException {
         double totalCurrentPrice = 0.0;
 
         for (Investment investment : portfolio.getInvestments()) {
@@ -95,5 +95,44 @@ public class AnalyticsService {
         } else {
             throw new InterruptedException("Portfolio is either not found or not authorized");
         }
+    }
+
+    public double getCurrentPrice(String symbol) {
+        String url = String.format("https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=%s&apikey=%s", symbol, apiKey);
+        Map<String, Object> response = restTemplate.getForObject(url, Map.class);
+        Map<String, String> globalQuote = (Map<String, String>) response.get("Global Quote");
+        String priceAsString = globalQuote.get("05. price");
+        return Double.parseDouble(priceAsString);
+    }
+
+    public double calculateExpectedReturn(Portfolio portfolio) {
+        double totalCurrentValue = 0;
+        double totalPurchaseValue = 0;
+
+        for (Investment investment : portfolio.getInvestments()) {
+            double currentPrice = getCurrentPrice(investment.getSymbol());
+            totalCurrentValue += currentPrice * investment.getQuantity();
+            totalPurchaseValue += investment.getPurchasePrice() * investment.getQuantity();
+        }
+
+        return (totalCurrentValue - totalPurchaseValue) / totalPurchaseValue;
+    }
+
+    public double getRiskFreeRate() {
+        // TODO: need to find an API to get risk free rate, using 0.05 as placeholder.
+        double riskFreeRate = 0.05;
+        return riskFreeRate;
+    }
+
+    public double calculateSharpeRatio(Portfolio portfolio, String startDate) throws InterruptedException {
+        double expectedReturn = calculateExpectedReturn(portfolio);
+        double volatility = calculateVolatility(portfolio, startDate);
+        double riskFreeRate = getRiskFreeRate();
+
+        if (volatility == 0) {
+            throw new IllegalArgumentException("Volatility cannot be zero when calculating the Sharpe Ratio.");
+        }
+
+        return (expectedReturn - riskFreeRate) / volatility;
     }
 }

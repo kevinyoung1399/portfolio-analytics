@@ -30,7 +30,7 @@ public class DevController {
         Portfolio portfolio = request.getPortfolio();
         String date = request.getDate();
         System.out.println(portfolio.toString() + date);
-        PortfolioReturn result = analyticsService.calculateReturn(portfolio, date);
+        PortfolioReturn result = analyticsService.calculateActualRealizedReturn(portfolio, date);
         return ResponseEntity.ok(result);
     }
 
@@ -49,6 +49,15 @@ public class DevController {
         String date = request.getDate();
         System.out.println(portfolio.toString() + date);
         double result = analyticsService.calculateVolatility(portfolio, date);
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/sharpe")
+    public ResponseEntity<Double> calculateSharpeRatio(@RequestBody PortfolioDateRequest request) throws InterruptedException {
+        Portfolio portfolio = request.getPortfolio();
+        String date = request.getDate();
+        System.out.println(portfolio.toString() + date);
+        double result = analyticsService.calculateSharpeRatio(portfolio, date);
         return ResponseEntity.ok(result);
     }
 
